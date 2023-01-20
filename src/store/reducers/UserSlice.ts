@@ -1,5 +1,5 @@
 import { fetchUsers } from './ActionCreators';
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { Action, AnyAction, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { IUser } from "../../models/IUser"
 
 interface UserState {
@@ -17,6 +17,15 @@ const initialState: UserState = {
 
 };
 
+// ActionReducerMapBuilder
+interface RejectedAction extends Action {
+    payload: string;
+    error: Error
+  }
+  
+  function isRejectedAction(action: AnyAction): action is RejectedAction {
+    return action.type.endsWith('rejected')
+  }
 export const userSlice = createSlice({
     name: 'user',
     initialState,
@@ -35,19 +44,37 @@ export const userSlice = createSlice({
         // },
     },
     // toolkit Thunk
-    extraReducers: {
-        [fetchUsers.pending.type]: (state) => {
+
+    // extraReducers: {
+    //     [fetchUsers.pending.type]: (state) => {
+    //         state.isLoading = true
+    //     },
+    //     [fetchUsers.fulfilled.type]: (state, action: PayloadAction<IUser[]>) => {
+    //         state.isLoading = false
+    //         state.error = ''
+    //         state.users = action.payload
+    //     },
+    //     [fetchUsers.rejected.type]: (state, action: PayloadAction<string>) => {
+    //         state.isLoading = false
+    //         state.error = action.payload
+    //     }
+    // }
+
+    // ActionReducerMapBuilder
+
+    extraReducers: (builder) => {
+        builder.addCase(fetchUsers.pending, (state) => {
             state.isLoading = true
-        },
-        [fetchUsers.fulfilled.type]: (state, action: PayloadAction<IUser[]>) => {
-            state.isLoading = false
-            state.error = ''
-            state.users = action.payload
-        },
-        [fetchUsers.rejected.type]: (state, action: PayloadAction<string>) => {
-            state.isLoading = false
-            state.error = action.payload
-        }
+        })
+            .addCase(fetchUsers.fulfilled, (state, action: PayloadAction<IUser[]>) => {
+                state.isLoading = false
+                state.error = ''
+                state.users = action.payload
+            })
+            .addMatcher(isRejectedAction , (state, action) => {
+                state.isLoading = false
+                state.error = action.payload
+            })
     }
 });
 
