@@ -6,8 +6,7 @@ import { userSlice } from './store/reducers/UserSlice';
 
 function App() {
   const { users, error, isLoading, count } = useAppSelector(state => state.userReducer)
-  console.log("🚀 ~ App ~ isLoading", isLoading)
-  console.log("🚀 ~ App ~ users", users)
+
   const dispatch = useAppDispatch()
   const [first, setfirst] = useState()
 
@@ -17,7 +16,8 @@ function App() {
       <h1>{count}</h1>
       <button onClick={()=>{fetchAllUsers()}}>Fetch User</button>
       <div>
-        {isLoading && <p>Loading...</p>}
+        {/* {isLoading && <p>Loading...</p>} */}
+        {error && <p>{error}</p>}
         {users.map(i => (
           <p>{i.name}</p>
         ))}
