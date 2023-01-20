@@ -1,24 +1,27 @@
-import React from 'react';
-import logo from './logo.svg';
+import { useState } from 'react';
 import './App.css';
+import { useAppDispatch, useAppSelector } from './hooks/redux';
+import { fetchUsers } from './store/reducers/ActionCreators';
+import { userSlice } from './store/reducers/UserSlice';
 
 function App() {
+  const { users, error, isLoading, count } = useAppSelector(state => state.userReducer)
+  console.log("🚀 ~ App ~ isLoading", isLoading)
+  console.log("🚀 ~ App ~ users", users)
+  const dispatch = useAppDispatch()
+  const [first, setfirst] = useState()
+
+  const fetchAllUsers = () => dispatch(fetchUsers())
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>{count}</h1>
+      <button onClick={()=>{fetchAllUsers()}}>Fetch User</button>
+      <div>
+        {isLoading && <p>Loading...</p>}
+        {users.map(i => (
+          <p>{i.name}</p>
+        ))}
+      </div>
     </div>
   );
 }
